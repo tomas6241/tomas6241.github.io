@@ -5,6 +5,12 @@ on:
     branches:
       - main
 
+# Grant the workflow permission to write repository contents and Pages (required for pushes)
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
