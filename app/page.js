@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useRef} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 
 export default function page() {
@@ -17,6 +17,30 @@ export default function page() {
   const updteImg = (im) => {
     $img(im);
   }
+
+  // Preload GIFs so hover/click swaps feel instant
+  useEffect(() => {
+    const files = [
+      '/monkeys/waiting.gif',
+      '/monkeys/excited.gif',
+      '/monkeys/happy.gif',
+      '/monkeys/bored.gif',
+      '/monkeys/sad.gif',
+      '/monkeys/motivation.gif',
+      '/monkeys/motivation2.gif'
+    ];
+
+    const imgs = files.map((src) => {
+      const i = new Image();
+      i.src = src;
+      return i;
+    });
+
+    // cleanup - allow GC
+    return () => {
+      imgs.forEach((i) => { i.src = ''; });
+    };
+  }, []);
 
   const router = useRouter();
   const hoverTimer = useRef(null);
@@ -73,8 +97,8 @@ export default function page() {
 
   return (
     <div className='box'>
-      <img alt='gumball' className='gif' src={`/${img}.gif`} />
-      {how ? 'Hmmmph, não há outra hipótese! Sorry not sorry :)' : 'Permites me levar-te a sair Margarida? 😺💖'}
+  <img alt='gumball' className='gif' src={`/${img}.gif`} loading='eager' />
+      {how ? 'Hmmmph, não há outra hipótese! Sorry not sorry :)' : 'Oiii queres ir num date comigoo? 😺💖'}
       <div className='btns'>
         <div className='yes'>
           <button
@@ -125,7 +149,7 @@ export default function page() {
       </div>
       {motivationActive && (
         <div className='motivation' role='status' aria-live='polite'>
-          <img alt='motivation' src={motivationSrc} />
+          <img alt='motivation' src={motivationSrc} loading='eager' />
           <div className='label'>
             {motivationSrc === '/monkeys/motivation2.gif' ? 'Issoo, desse botão gosto maisss 👀👀' : 'Está aqui uma motivação para ires 🔥🔥🔥'}
           </div>

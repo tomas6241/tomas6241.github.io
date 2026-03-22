@@ -1,25 +1,38 @@
-export default function page() {
+"use client"
+
+import { useEffect } from 'react'
+
+export default function Page() {
+  useEffect(() => {
+    // Redirect to the static game page. Use replace so back button doesn't return here.
+    const target = '/fun/web-pacman-main/index.html'
+    try {
+      window.location.replace(target)
+    } catch (e) {
+      // If window not available for any reason, nothing to do
+      // The UI below provides a fallback link and iframe.
+      console.error('Redirect failed', e)
+    }
+  }, [])
 
   return (
-    <div className='box'>
-      <h2 style={{fontSize: '2rem'}}>Mini página de entretenimento</h2>
-      <p style={{maxWidth: 600, textAlign: 'center'}}>
-        Aqui vai ficar uma versão alternativa do Pacman que vamos construir com calma. Por agora, é só um placeholder com alguns detalhes sobre o jogo.
+    <div className="box">
+      <h2>Redirecionando para o jogo…</h2>
+      <p>
+        Se não for redirecionado automaticamente,
+        <a href="/fun/web-pacman-main/index.html" style={{color: '#bfefff', textDecoration: 'underline', marginLeft: '6px'}}>clique aqui</a>
       </p>
 
-      <div style={{marginTop: 16}}>
-        <strong>Proposta:</strong>
-        <ul style={{textAlign: 'left'}}>
-          <li>Jogabilidade inspirada no Pacman</li>
-          <li>Níveis pequenos e coloridos</li>
-          <li>Power-ups com efeitos fofos 💖</li>
-        </ul>
-      </div>
-
-      <div style={{marginTop: 20}}>
-        <a href='/' style={{color: '#bfefff', textDecoration: 'underline'}}>Voltar</a>
+      <div style={{marginTop: '18px'}}>
+        {/* Fallback iframe so users without automatic redirect can still play */}
+        <iframe
+          title="Pacman"
+          src="/fun/web-pacman-main/index.html"
+          style={{width: '100%', height: '70vh', border: 'none'}}
+        />
       </div>
     </div>
   )
-
 }
+// Note: kept only the redirect + iframe fallback above. The previous placeholder page
+// was removed to avoid duplicate default exports which break static export.
