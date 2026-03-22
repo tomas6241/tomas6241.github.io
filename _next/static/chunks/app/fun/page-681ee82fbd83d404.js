@@ -1,0 +1,9 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[84],{8364:function(e,n,r){Promise.resolve().then(r.bind(r,960))},960:function(e,n,r){"use strict";r.r(n),r.d(n,{default:function(){return i}});var t=r(9268),o=r(6006);function i(){return(0,o.useEffect)(()=>{try{window.location.replace("/fun/web-pacman-main/index.html")}catch(e){console.error("Redirect failed",e)}},[]),(0,t.jsxs)("div",{className:"box",children:[(0,t.jsx)("h2",{children:"Redirecionando para o jogo…"}),(0,t.jsxs)("p",{children:["Se n\xe3o for redirecionado automaticamente,",(0,t.jsx)("a",{href:"/fun/web-pacman-main/index.html",style:{color:"#bfefff",textDecoration:"underline",marginLeft:"6px"},children:"clique aqui"})]}),(0,t.jsx)("div",{style:{marginTop:"18px"},children:(0,t.jsx)("iframe",{title:"Pacman",src:"/fun/web-pacman-main/index.html",style:{width:"100%",height:"70vh",border:"none"}})})]})}},3177:function(e,n,r){"use strict";/**
+ * @license React
+ * react-jsx-runtime.production.min.js
+ *
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */var t=r(6006),o=Symbol.for("react.element"),i=(Symbol.for("react.fragment"),Object.prototype.hasOwnProperty),a=t.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,c={key:!0,ref:!0,__self:!0,__source:!0};function f(e,n,r){var t,f={},s=null,l=null;for(t in void 0!==r&&(s=""+r),void 0!==n.key&&(s=""+n.key),void 0!==n.ref&&(l=n.ref),n)i.call(n,t)&&!c.hasOwnProperty(t)&&(f[t]=n[t]);if(e&&e.defaultProps)for(t in n=e.defaultProps)void 0===f[t]&&(f[t]=n[t]);return{$$typeof:o,type:e,key:s,ref:l,props:f,_owner:a.current}}n.jsx=f,n.jsxs=f},9268:function(e,n,r){"use strict";e.exports=r(3177)}},function(e){e.O(0,[253,769,744],function(){return e(e.s=8364)}),_N_E=e.O()}]);
