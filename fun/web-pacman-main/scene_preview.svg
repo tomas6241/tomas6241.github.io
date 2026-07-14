@@ -1,0 +1,37 @@
+<svg width="224" height="248" viewBox="0 0 224 248" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<image href="app/style/graphics/spriteSheets/maze/maze_blue.svg" width="224" height="248"/>
+<svg x="17" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="17" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="33" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="33" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="49" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="49" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="65" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="65" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="81" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="81" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="97" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="97" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="113" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="113" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="129" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="129" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="145" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="145" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="161" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="161" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="177" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="177" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="193" y="17" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="193" y="225" width="10" height="10" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/pacdot.svg" width="32" height="32"/></svg>
+<svg x="8" y="24" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/powerPellet.svg" width="32" height="32"/></svg>
+<svg x="200" y="24" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/powerPellet.svg" width="32" height="32"/></svg>
+<svg x="8" y="200" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/powerPellet.svg" width="32" height="32"/></svg>
+<svg x="200" y="200" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/pickups/powerPellet.svg" width="32" height="32"/></svg>
+<svg x="88" y="112" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/characters/ghosts/blinky/blinky_left.svg" width="64" height="32" image-rendering="pixelated"/></svg>
+<svg x="120" y="112" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/characters/ghosts/pinky/pinky_right.svg" width="64" height="32" image-rendering="pixelated"/></svg>
+<svg x="88" y="96" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/characters/ghosts/inky/inky_down.svg" width="64" height="32" image-rendering="pixelated"/></svg>
+<svg x="120" y="96" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/characters/ghosts/clyde/clyde_down.svg" width="64" height="32" image-rendering="pixelated"/></svg>
+<svg x="104" y="160" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/characters/ghosts/scared_blue.svg" width="64" height="32" image-rendering="pixelated"/></svg>
+<svg x="104" y="176" width="16" height="16" viewBox="0 0 32 32"><image href="app/style/graphics/spriteSheets/characters/pacman/pacman_up.svg" width="128" height="32" image-rendering="pixelated"/></svg>
+</svg>

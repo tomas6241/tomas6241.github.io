@@ -2566,9 +2566,9 @@ class Pickup {
    */
   setStyleMeasurements(type, scaledTileSize, column, row, points) {
     if (type === 'pacdot') {
-      this.size = scaledTileSize * 0.25;
-      this.x = (column * scaledTileSize) + ((scaledTileSize / 8) * 3);
-      this.y = (row * scaledTileSize) + ((scaledTileSize / 8) * 3);
+      this.size = scaledTileSize * 0.6;
+      this.x = (column * scaledTileSize) + ((scaledTileSize - this.size) / 2);
+      this.y = (row * scaledTileSize) + ((scaledTileSize - this.size) / 2);
     } else if (type === 'powerPellet') {
       this.size = scaledTileSize;
       this.x = (column * scaledTileSize);

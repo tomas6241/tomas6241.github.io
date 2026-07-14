@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>A Fuga da Margarida</title>
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root { --pink: #ff5c93; --pink-dark: #7a2e52; --pink-hot: #ff3d7f; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0410; }
+    body { font-family: 'Press Start 2P', monospace; color: #fff; }
+    #game { position: fixed; inset: 0; display: block; }
+
+    .overlay {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+      background: radial-gradient(circle at 50% 34%, #46123d, #0c0410 74%);
+    }
+    .overlay.hidden { display: none; }
+    .title {
+      margin: 0 0 18px; line-height: 1.5;
+      font-size: clamp(20px, 5.5vw, 46px);
+      color: var(--pink);
+      text-shadow: 3px 3px var(--pink-dark), 0 0 18px rgba(255,92,147,.6);
+    }
+    .sub { margin: 0 0 30px; font-size: clamp(9px, 2.3vw, 14px); line-height: 2; color: #ffd1e8; }
+    .btn {
+      font-family: inherit; cursor: pointer;
+      background: #ffb0d4; color: var(--pink-dark);
+      border: 5px solid var(--pink-dark); border-radius: 12px;
+      box-shadow: 5px 5px var(--pink-hot);
+      font-size: clamp(18px, 4.5vw, 34px); padding: 14px 26px; outline: none;
+    }
+    .btn:active { box-shadow: none; transform: translate(5px, 5px); }
+    .links { margin-top: 26px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .link {
+      font-family: inherit; font-size: clamp(8px, 2vw, 11px);
+      color: #ffd1e8; text-decoration: none;
+      border: 2px solid var(--pink-dark); border-radius: 8px;
+      padding: 9px 12px; background: rgba(122,46,82,.35);
+    }
+    .link:hover { background: rgba(255,92,147,.35); }
+    .stat { font-size: clamp(11px, 2.8vw, 18px); color: #fff; margin: 6px 0; }
+    .stat b { color: var(--pink); }
+    .hint { margin-top: 22px; font-size: clamp(8px, 1.8vw, 11px); color: #b98fb0; }
+    #hud {
+      position: fixed; top: 12px; left: 0; right: 0; z-index: 10;
+      display: flex; justify-content: space-between;
+      padding: 0 16px; font-size: clamp(9px, 2.4vw, 15px);
+      pointer-events: none; text-shadow: 2px 2px #000;
+    }
+    #hud .hearts { color: var(--pink); }
+    #toast {
+      position: fixed; top: 18%; left: 50%; transform: translateX(-50%);
+      z-index: 15; font-size: clamp(12px, 3vw, 22px); color: var(--pink);
+      text-shadow: 2px 2px #000; opacity: 0; transition: opacity .3s;
+      pointer-events: none; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="hearts">&#9829; <span id="hud-hearts">0</span></div>
+    <div>&#10230; <span id="hud-dist">0</span> m</div>
+  </div>
+
+  <div id="toast"></div>
+
+  <div id="start" class="overlay">
+    <h1 class="title">A Fuga da<br>Margarida</h1>
+    <p class="sub">
+      Algo espreita na floresta&#8230;<br>
+      Corre, salta e junta corac&#807;o&#771;es!<br>
+      Cada corac&#807;a&#771;o afasta o monstro.<br>
+      Se tropec&#807;ares, ele aproxima-se&#8230;
+    </p>
+    <button id="btn-start" class="btn">FUGIR!</button>
+    <p class="hint">ESPAC&#807;O / seta &#8593; / clique &#8212; saltar (salto duplo!)</p>
+  </div>
+
+  <div id="over" class="overlay hidden">
+    <h1 class="title">Apanhada!</h1>
+    <p class="stat">Dista&#770;ncia: <b id="over-dist">0</b> m</p>
+    <p class="stat">Corac&#807;o&#771;es: <b id="over-hearts">0</b></p>
+    <p class="stat" id="over-best"></p>
+    <button id="btn-retry" class="btn">OUTRA VEZ</button>
+    <div class="links">
+      <a class="link" href="../web-pacman-main/index.html">&#9829; Apanha os Corac&#807;o&#771;es</a>
+      <a class="link" href="/">&#8962; In&#772;icio</a>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+    var A = '../web-pacman-main/app/style/graphics/spriteSheets/';
+    var SRC = {
+      girl: A + 'characters/pacman/pacman_right.svg',      // 4 frames
+      chaser: A + 'characters/ghosts/blinky/blinky_right.svg', // 2 frames
+      heart: A + 'pickups/pacdot.svg',                     // 1 frame
+      obs: [
+        A + 'characters/ghosts/pinky/pinky_right.svg',
+        A + 'characters/ghosts/inky/inky_right.svg',
+        A + 'characters/ghosts/clyde/clyde_right.svg'
+      ]
+    };
+    var FRAMES = { girl: 4, chaser: 2, heart: 1, obs: 2 };
+
+    var canvas = document.getElementById('game');
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+
+    var W = 0, H = 0, groundY = 0, unit = 0, skyGrad = null;
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = Math.floor(W * dpr);
+      canvas.height = Math.floor(H * dpr);
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      groundY = Math.round(H * 0.80);
+      unit = Math.max(46, Math.round(H * 0.13)); // character size in px
+      skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+      skyGrad.addColorStop(0, '#1b0a2e');
+      skyGrad.addColorStop(0.55, '#2a0d33');
+      skyGrad.addColorStop(1, '#0c0410');
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // ---- asset loading -------------------------------------------------
+    // SVGs are re-rasterized on every drawImage(), which causes jank. So each
+    // sheet is baked once into an offscreen <canvas>; blitting a canvas is fast.
+    var baked = {}, toLoad = 0, loaded = 0, ready = false;
+    function load(key, src) {
+      toLoad++;
+      var img = new Image();
+      img.onload = function () {
+        var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+        var c = document.createElement('canvas');
+        // bake at 2x the intrinsic size for a little extra crispness when upscaled
+        c.width = w * 2; c.height = h * 2;
+        var cx = c.getContext('2d');
+        cx.imageSmoothingEnabled = false;
+        cx.drawImage(img, 0, 0, c.width, c.height);
+        c.frameW = c.width; // full width (frames laid out horizontally)
+        baked[key] = c;
+        loaded++; if (loaded >= toLoad) ready = true;
+      };
+      img.onerror = function () { loaded++; if (loaded >= toLoad) ready = true; };
+      img.src = src;
+    }
+    load('girl', SRC.girl);
+    load('chaser', SRC.chaser);
+    load('heart', SRC.heart);
+    SRC.obs.forEach(function (s, i) { load('obs' + i, s); });
+
+    function drawSprite(img, frame, total, dx, dy, dw, dh, flip) {
+      if (!img || !img.width) return;
+      var sw = img.width / total, sh = img.height;
+      var sx = Math.floor(frame) * sw;
+      if (flip) {
+        ctx.save();
+        ctx.translate(dx + dw, dy); ctx.scale(-1, 1);
+        ctx.drawImage(img, sx, 0, sw, sh, 0, 0, dw, dh);
+        ctx.restore();
+      } else {
+        ctx.drawImage(img, sx, 0, sw, sh, dx, dy, dw, dh);
+      }
+    }
+
+    // ---- game state ----------------------------------------------------
+    var G = {};
+    function reset() {
+      G.playerX = Math.round(W * 0.22);
+      G.py = groundY - unit;      // top of player
+      G.vy = 0;
+      G.onGround = true;
+      G.jumps = 0;
+      G.animT = 0; G.frame = 0;
+      G.dist = 0;
+      G.hearts = 0;
+      G.speed = W * 0.42;
+      G.gap = W * 0.30;           // distance chaser is behind the player
+      G.obstacles = [];
+      G.pickups = [];
+      G.obsTimer = 0.9;
+      G.obsExtra = 0;
+      G.heartTimer = 0.4;
+      G.invuln = 0;
+      G.chaserAnimT = 0;
+      G.milestone = 0;
+      G.over = false;
+      G.running = false;
+    }
+    reset();
+
+    var CAUGHT = function () { return W * 0.02; };
+    var GAP_MAX = function () { return W * 0.32; };
+
+    function jump() {
+      if (!G.running || G.over) return;
+      if (G.onGround || G.jumps < 2) {
+        G.vy = -H * (G.onGround ? 1.18 : 1.02);
+        G.onGround = false;
+        G.jumps++;
+      }
+    }
+
+    function showToast(msg) {
+      var t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(function () { t.classList.remove('show'); }, 1200);
+    }
+
+    // pick an obstacle type; more variety / harder types appear with distance
+    function pickType() {
+      var r = Math.random(), d = G.dist;
+      if (d < 120) return r < 0.62 ? 'creature' : 'rock';
+      if (d < 320) return r < 0.4 ? 'creature' : r < 0.64 ? 'rock' : r < 0.84 ? 'tall' : 'pit';
+      return r < 0.32 ? 'creature' : r < 0.52 ? 'rock' : r < 0.76 ? 'tall' : 'pit';
+    }
+    function obsBox(o) {
+      var s = o.size;
+      if (o.type === 'rock') return { w: s * 0.66, h: s * 0.52 };
+      if (o.type === 'tall') return { w: s * 0.5, h: s * 1.5 };
+      if (o.type === 'pit') return { w: s * 1.55, h: unit * 0.34 };
+      return { w: s * 0.66, h: s * 0.7 }; // creature
+    }
+    function spawnObstacle() {
+      var type = pickType();
+      var s = unit * (0.85 + Math.random() * 0.4);
+      G.obstacles.push({
+        type: type, x: W + unit * 1.6, size: s, hit: false,
+        img: 'obs' + Math.floor(Math.random() * SRC.obs.length),
+        frame: Math.random() * FRAMES.obs
+      });
+      // give wide/tall hazards extra breathing room to stay fair
+      G.obsExtra = type === 'pit' ? 0.55 : type === 'tall' ? 0.35 : 0.1;
+    }
+    function spawnHeart() {
+      var jumpH = (H * 1.18) * (H * 1.18) / (2 * (H * 3.0)); // approx max jump height
+      var low = groundY - unit * 0.7;
+      var high = groundY - Math.min(jumpH * 0.95, H * 0.42);
+      var y = high + Math.random() * (low - high);
+      G.pickups.push({ x: W + unit, y: y, size: unit * 0.62, got: false });
+    }
+
+    function hit(a, ax, ay, aw, ah, b, bx, by, bw, bh) {
+      return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+    }
+
+    // ---- update --------------------------------------------------------
+    function update(dt) {
+      if (!G.running || G.over) return;
+      G.dist += G.speed * dt / 44;
+      G.speed = Math.min(W * 0.92, G.speed + dt * W * 0.012);
+
+      // run animation
+      G.animT += dt;
+      if (G.animT > 0.09) { G.animT = 0; G.frame = (G.frame + 1) % FRAMES.girl; }
+      G.chaserAnimT += dt;
+
+      // physics
+      var g = H * 3.0;
+      G.vy += g * dt;
+      G.py += G.vy * dt;
+      if (G.py >= groundY - unit) { G.py = groundY - unit; G.vy = 0; G.onGround = true; G.jumps = 0; }
+
+      // chaser slowly creeps in (tension); events change the gap
+      G.gap -= dt * W * 0.007;
+      if (G.invuln > 0) G.invuln -= dt;
+
+      // spawn
+      var spd = G.speed / W;
+      G.obsTimer -= dt;
+      if (G.obsTimer <= 0) { spawnObstacle(); G.obsTimer = (0.95 + Math.random() * 0.9) / Math.max(0.55, spd) + G.obsExtra; }
+      G.heartTimer -= dt;
+      if (G.heartTimer <= 0) { spawnHeart(); G.heartTimer = (0.7 + Math.random() * 1.1) / Math.max(0.55, spd); }
+
+      // move + collide obstacles
+      var px = G.playerX, py = G.py, pw = unit * 0.6, ph = unit * 0.9;
+      var pcx = px + (unit - pw) / 2;
+      for (var i = G.obstacles.length - 1; i >= 0; i--) {
+        var o = G.obstacles[i];
+        o.x -= G.speed * dt;
+        if (o.type === 'creature') o.frame = (o.frame + dt * 6) % FRAMES.obs;
+        var b = obsBox(o);
+        var ox = o.x + (o.size - b.w) / 2, oy = groundY - b.h;
+        if (!o.hit && G.invuln <= 0 &&
+            hit(0, pcx, py + unit * 0.1, pw, ph, 0, ox, oy, b.w, b.h)) {
+          o.hit = true;
+          G.invuln = 1.0;
+          G.gap -= W * (o.type === 'pit' ? 0.13 : 0.11); // stumble: monster lunges closer
+          showToast(o.type === 'pit' ? 'Quase!' : 'Ai!');
+        }
+        if (o.x < -o.size * 2) G.obstacles.splice(i, 1);
+      }
+
+      // move + collect hearts
+      for (var j = G.pickups.length - 1; j >= 0; j--) {
+        var h = G.pickups[j];
+        h.x -= G.speed * dt;
+        if (!h.got && hit(0, pcx, py, pw, unit, 0, h.x, h.y, h.size, h.size)) {
+          h.got = true;
+          G.hearts++;
+          G.gap = Math.min(GAP_MAX(), G.gap + W * 0.028); // reward: push monster back
+          if (G.hearts === 10 || G.hearts === 25 || G.hearts === 50) showToast('\u2665 Coragem!');
+        }
+        if (h.got || h.x < -h.size) G.pickups.splice(j, 1);
+      }
+
+      // caught?
+      if (G.gap <= CAUGHT()) gameOver();
+
+      // HUD
+      document.getElementById('hud-hearts').textContent = G.hearts;
+      document.getElementById('hud-dist').textContent = Math.floor(G.dist);
+    }
+
+    // ---- render --------------------------------------------------------
+    function drawBackground() {
+      ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, W, H);
+
+      // moon
+      ctx.fillStyle = '#ffd1e8';
+      ctx.beginPath(); ctx.arc(W * 0.8, H * 0.2, Math.max(22, H * 0.06), 0, 7); ctx.fill();
+      ctx.fillStyle = '#2a0d33';
+      ctx.beginPath(); ctx.arc(W * 0.82, H * 0.185, Math.max(18, H * 0.05), 0, 7); ctx.fill();
+
+      // parallax tree silhouettes (two layers)
+      drawTrees(H * 0.62, '#1c0826', (G.dist * 6));
+      drawTrees(H * 0.70, '#150420', (G.dist * 11));
+
+      // ground
+      ctx.fillStyle = '#241033'; ctx.fillRect(0, groundY, W, H - groundY);
+      ctx.fillStyle = '#3a1a4d'; ctx.fillRect(0, groundY, W, Math.max(3, H * 0.006));
+      // ground texture dashes scrolling
+      ctx.fillStyle = 'rgba(255,92,147,0.18)';
+      var step = unit * 1.4, off = (G.dist * 14) % step;
+      for (var x = -off; x < W; x += step) ctx.fillRect(x, groundY + unit * 0.35, unit * 0.5, 2);
+
+      // red menace glow from the left (the creature's presence)
+      var glow = ctx.createLinearGradient(0, 0, W * 0.42, 0);
+      var intensity = Math.max(0, 0.5 - G.gap / W);
+      glow.addColorStop(0, 'rgba(150,20,40,' + (0.25 + intensity) + ')');
+      glow.addColorStop(1, 'rgba(150,20,40,0)');
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, W * 0.5, H);
+    }
+
+    // deterministic pseudo-random in [0,1) from an integer index
+    function rand1(n) { var s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); }
+
+    function drawTrees(baseY, color, scroll) {
+      ctx.fillStyle = color;
+      var w = unit * 1.6, gap = unit * 2.4, period = w + gap;
+      var first = Math.floor(scroll / period);
+      var off = scroll - first * period; // in [0, period)
+      // height is keyed to the tree's stable world index, not its screen x,
+      // so trees keep a fixed shape as they scroll (no shimmering).
+      for (var i = 0; i * period - off < W + w; i++) {
+        var idx = first + i;
+        var x = i * period - off;
+        var h = baseY * (0.45 + rand1(idx) * 0.55);
+        ctx.beginPath();
+        ctx.moveTo(x, groundY);
+        ctx.lineTo(x + w / 2, groundY - h);
+        ctx.lineTo(x + w, groundY);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+
+    function render() {
+      drawBackground();
+      if (!G.running) return;
+
+      // hearts
+      for (var j = 0; j < G.pickups.length; j++) {
+        var h = G.pickups[j];
+        drawSprite(baked.heart, 0, FRAMES.heart, h.x, h.y, h.size, h.size);
+      }
+      // obstacles
+      for (var i = 0; i < G.obstacles.length; i++) drawObstacle(G.obstacles[i]);
+
+      // chaser creature (looming behind, from the left)
+      var cSize = unit * 1.7;
+      var cx = G.playerX - G.gap - cSize;
+      var bob = Math.sin(G.chaserAnimT * 10) * unit * 0.05;
+      var cframe = Math.floor(G.chaserAnimT * 8) % FRAMES.chaser;
+      drawSprite(baked.chaser, cframe, FRAMES.chaser, cx, groundY - cSize * 0.95 + bob, cSize, cSize * 0.95);
+
+      // Margarida
+      var blink = G.invuln > 0 && (Math.floor(G.invuln * 12) % 2 === 0);
+      if (!blink) {
+        var frame = G.onGround ? G.frame : 1;
+        drawSprite(baked.girl, frame, FRAMES.girl, G.playerX, G.py, unit, unit);
+      }
+    }
+
+    function shadow(cx, w) {
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.beginPath();
+      ctx.ellipse(cx, groundY + unit * 0.06, w * 0.5, unit * 0.09, 0, 0, 7);
+      ctx.fill();
+    }
+
+    function drawObstacle(o) {
+      var b = obsBox(o);
+      var ox = o.x + (o.size - b.w) / 2;
+      if (o.type === 'creature') {
+        shadow(o.x + o.size / 2, o.size * 0.7);
+        drawSprite(baked[o.img], o.frame, FRAMES.obs, o.x, groundY - o.size * 0.7, o.size, o.size * 0.7, true);
+      } else if (o.type === 'rock') {
+        drawRock(ox, b.w, b.h);
+      } else if (o.type === 'tall') {
+        drawTall(ox, b.w, b.h);
+      } else if (o.type === 'pit') {
+        drawPit(ox, b.w);
+      }
+    }
+
+    function drawRock(x, w, h) {
+      var y = groundY - h;
+      shadow(x + w / 2, w);
+      ctx.fillStyle = '#3f2338';
+      ctx.beginPath();
+      ctx.moveTo(x, groundY);
+      ctx.lineTo(x, y + h * 0.4);
+      ctx.quadraticCurveTo(x, y, x + w * 0.5, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + h * 0.4);
+      ctx.lineTo(x + w, groundY);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#59314f';
+      ctx.fillRect(x + w * 0.16, y + h * 0.22, w * 0.34, h * 0.22);
+      ctx.fillStyle = '#ff5c93';
+      ctx.fillRect(x + w * 0.12, groundY - h * 0.16, w * 0.26, h * 0.12);
+      ctx.fillRect(x + w * 0.62, groundY - h * 0.12, w * 0.2, h * 0.1);
+    }
+
+    function drawTall(x, w, h) {
+      var y = groundY - h;
+      shadow(x + w / 2, w * 1.2);
+      // gnarled dead trunk
+      ctx.fillStyle = '#2a1140';
+      ctx.fillRect(x, y + h * 0.12, w, h * 0.88);
+      ctx.fillStyle = '#3a1a4d';
+      ctx.fillRect(x + w * 0.2, y + h * 0.12, w * 0.3, h * 0.88);
+      // jagged broken top
+      ctx.fillStyle = '#2a1140';
+      ctx.beginPath();
+      ctx.moveTo(x, y + h * 0.18);
+      ctx.lineTo(x + w * 0.3, y);
+      ctx.lineTo(x + w * 0.55, y + h * 0.14);
+      ctx.lineTo(x + w * 0.8, y - h * 0.02);
+      ctx.lineTo(x + w, y + h * 0.2);
+      ctx.closePath(); ctx.fill();
+      // pink thorns jutting out
+      ctx.fillStyle = '#ff3d7f';
+      var n = Math.max(2, Math.round(h / (unit * 0.5)));
+      for (var k = 0; k < n; k++) {
+        var ty = y + h * 0.22 + (h * 0.7) * (k / n);
+        var side = k % 2 === 0 ? -1 : 1;
+        var bx = side < 0 ? x : x + w;
+        ctx.beginPath();
+        ctx.moveTo(bx, ty);
+        ctx.lineTo(bx + side * w * 0.5, ty + h * 0.04);
+        ctx.lineTo(bx, ty + h * 0.12);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+
+    function drawPit(x, w) {
+      // a broken hole in the ground
+      ctx.fillStyle = '#0c0410';
+      ctx.fillRect(x, groundY, w, H - groundY);
+      // jagged crumbling top edge
+      ctx.beginPath();
+      ctx.moveTo(x, groundY);
+      var teeth = 5, tw = w / teeth;
+      for (var k = 0; k < teeth; k++) {
+        ctx.lineTo(x + k * tw + tw * 0.5, groundY + unit * 0.12);
+        ctx.lineTo(x + (k + 1) * tw, groundY);
+      }
+      ctx.lineTo(x + w, groundY + unit * 0.4);
+      ctx.lineTo(x, groundY + unit * 0.4);
+      ctx.closePath(); ctx.fill();
+      // faint red glow from within
+      var gr = ctx.createLinearGradient(0, groundY, 0, groundY + unit * 0.7);
+      gr.addColorStop(0, 'rgba(150,20,40,0.55)');
+      gr.addColorStop(1, 'rgba(150,20,40,0)');
+      ctx.fillStyle = gr;
+      ctx.fillRect(x, groundY, w, unit * 0.7);
+      // edge posts
+      ctx.fillStyle = '#3a1a4d';
+      ctx.fillRect(x - 3, groundY - unit * 0.05, 4, unit * 0.4);
+      ctx.fillRect(x + w - 1, groundY - unit * 0.05, 4, unit * 0.4);
+    }
+
+    // ---- loop ----------------------------------------------------------
+    var last = 0;
+    function frame(ts) {
+      var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0;
+      last = ts;
+      if (ready) { update(dt); render(); }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // ---- flow ----------------------------------------------------------
+    function start() {
+      reset();
+      G.running = true;
+      document.getElementById('start').classList.add('hidden');
+      document.getElementById('over').classList.add('hidden');
+      document.getElementById('hud').classList.remove('hidden');
+    }
+    function gameOver() {
+      G.over = true; G.running = false;
+      document.getElementById('hud').classList.add('hidden');
+      document.getElementById('over-dist').textContent = Math.floor(G.dist);
+      document.getElementById('over-hearts').textContent = G.hearts;
+      var best = 0;
+      try { best = parseInt(localStorage.getItem('margaridaRunnerBest') || '0', 10); } catch (e) {}
+      var d = Math.floor(G.dist);
+      if (d > best) { best = d; try { localStorage.setItem('margaridaRunnerBest', d); } catch (e) {} }
+      document.getElementById('over-best').textContent = 'Recorde: ' + best + ' m';
+      document.getElementById('over').classList.remove('hidden');
+    }
+
+    document.getElementById('btn-start').addEventListener('click', start);
+    document.getElementById('btn-retry').addEventListener('click', start);
+
+    function onPress(e) {
+      if (e.type === 'keydown' && [' ', 'ArrowUp', 'w', 'W'].indexOf(e.key) === -1) return;
+      if (e.type === 'keydown') e.preventDefault();
+      if (G.over) { return; }
+      if (!G.running) { return; }
+      jump();
+    }
+    window.addEventListener('keydown', onPress);
+    canvas.addEventListener('pointerdown', function () { if (G.running && !G.over) jump(); });
+  })();
+  </script>
+</body>
+</html>
