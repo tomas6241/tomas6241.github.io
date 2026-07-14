@@ -10,40 +10,20 @@ export default function Jogos() {
 
   return (
     <div className="box">
-      <div>Joguinhos 🎮💖</div>
-      <div style={{ fontSize: '1.1rem', opacity: 0.9 }}>
-        Escolhe um jogo para a Margarida:
-      </div>
+      <div className="date-label">intervalo antes do filme</div>
+      <h1 className="title">Joguinhos à beira-mar 🎮🌊</h1>
+      <p className="subtitle">Escolhe um jogo, Margarida 💖</p>
 
-      <div
-        className="btns"
-        style={{ width: 'auto', justifyContent: 'center', flexWrap: 'wrap', gap: '24px' }}
-      >
-        <button
-          style={{ fontSize: '1.4rem' }}
-          onClick={() => openGame('/fun/web-pacman-main/index.html')}
-        >
+      <div className="game-buttons">
+        <button onClick={() => openGame('/fun/web-pacman-main/index.html')}>
           💗 Apanha os Corações
         </button>
-        <button
-          style={{ fontSize: '1.4rem' }}
-          onClick={() => openGame('/fun/runner/index.html')}
-        >
+        <button onClick={() => openGame('/fun/runner/index.html')}>
           🏃‍♀️ A Fuga da Margarida
         </button>
       </div>
 
-      <button
-        onClick={() => router.push('/')}
-        style={{
-          marginTop: '10px',
-          fontSize: '1rem',
-          padding: '8px 18px',
-          background: 'transparent',
-          boxShadow: 'none',
-          color: '#bfefff'
-        }}
-      >
+      <button className="ghost-btn" onClick={() => router.push('/')}>
         ← Voltar
       </button>
     </div>

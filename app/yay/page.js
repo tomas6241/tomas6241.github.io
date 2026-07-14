@@ -1,30 +1,21 @@
+import DateScene from '../DateScene'
+
 export default function page() {
-
   return (
-    <div className='box'>
-      <img alt='yayyy' className='gif' src='/monkeys/happy.gif' />
-      {"Uuueeeebaaa~ vamos combinar o date de sextaaaaa 💖😺"}
-      <div style={{fontSize: '1.1rem', marginTop: '10px'}}>Hehehe adoro-te fofa 💘</div>
-
-      <div style={{marginTop: '18px'}}>
-        <a
-          href='/jogos'
-          style={{
-            display: 'inline-block',
-            textDecoration: 'none',
-            background: 'linear-gradient(135deg, #bfefff 0%, #ffd0e8 100%)',
-            color: '#042233',
-            borderRadius: '14px',
-            padding: '12px 26px',
-            font: '900 1.4rem Jua',
-            boxShadow: '0 6px 20px rgba(0, 140, 255, 0.12), 0 3px 10px rgba(255, 90, 180, 0.12)'
-          }}
-        >
-          Joguinhos 🎮
-        </a>
+    <div className="box">
+      <div className="date-label">date confirmado</div>
+      <DateScene mood="happy" />
+      <h1 className="title">Uuueeeebaaa~ temos date, Margarida! 💛</h1>
+      <div className="plan-strip">
+        <div className="plan-step">🏖️<br />Praia ao pôr do sol</div>
+        <span className="plan-arrow">→</span>
+        <div className="plan-step">🎬<br />Cinema e pipocas</div>
       </div>
+      <p className="subtitle">Agora só tens de esperar! ehehehe</p>
 
+      <div style={{ marginTop: '10px' }}>
+        <a className="btn-link" href="/jogos">Joguinhos 🎮</a>
+      </div>
     </div>
   )
-
 }
