@@ -71,6 +71,16 @@ button:hover {
   .btns { width: 90% }
 }
 
+/* small "Joguinhos" shortcut pinned to the top-left corner */
+.joguinhos-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  z-index: 50;
+}
+
 /* small motivation box shown top-right when triggered */
 .motivation {
   position: fixed;

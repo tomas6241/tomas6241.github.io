@@ -143,11 +143,11 @@ body {
   margin-top: 25vh; }
 
 .game-start {
-  background-color: #fcc73f;
-  border: 5px solid #231f20;
+  background-color: #ffb0d4;
+  border: 5px solid #7a2e52;
   border-radius: 10px;
-  box-shadow: 5px 5px #ee2a29;
-  color: #231f20;
+  box-shadow: 5px 5px #ff3d7f;
+  color: #7a2e52;
   cursor: pointer;
   font-size: 48px;
   outline: none;
@@ -160,7 +160,7 @@ body {
 
 .loading-container {
   background-color: #000;
-  border: 5px solid #2121ff;
+  border: 5px solid #ff4d8d;
   border-radius: 10px;
   height: 48px;
   left: 50%;
@@ -278,9 +278,9 @@ body {
     margin-bottom: -3px; }
   .movement-buttons button {
     background: transparent;
-    border: 3px solid #2121ff;
+    border: 3px solid #ff4d8d;
     border-radius: 5px;
-    color: #2121ff;
+    color: #ff4d8d;
     height: 7vh;
     outline: none;
     padding: 0;

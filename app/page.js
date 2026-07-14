@@ -97,6 +97,9 @@ export default function page() {
 
   return (
     <div className='box'>
+      <button className='joguinhos-btn' onClick={() => router.push('/jogos')}>
+        Joguinhos 🎮
+      </button>
   <img alt='gumball' className='gif' src={`/${img}.gif`} loading='eager' />
       {how ? 'Hmmmph, não há outra hipótese! Sorry not sorry :)' : 'Oiii queres ir num date comigoo? 😺💖'}
       <div className='btns'>
